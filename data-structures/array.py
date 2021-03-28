@@ -1,9 +1,8 @@
 import random
-import typing
-import pytest
-
 from typing import List, Tuple
-from collections import defaultdict
+
+import pytest
+import numpy as np
 
 
 # Utilites
@@ -336,9 +335,79 @@ def merge2arrays2(arr1: List, arr2: List) -> None:
 
 @pytest.mark.parametrize(
 	"a,b",
-	[([None, 2, None, 3, None, 5, 6, None, None], [1, 8, 9, 10, 15]), ([1, None, 7, 8, None, None], [2, 3, 9])]
+	[([None, 2, None, 3, None, 5, 6, None, None],
+     [1, 8, 9, 10, 15]),
+    ([1, None, 7, 8, None, None],
+     [2, 3, 9])]
 )
 def test_merge2arrays2(a, b) -> None:
 	sorted_a = sorted(filter(None, a+b))
 	merge2arrays2(a, b)
 	assert a == sorted_a, a
+
+
+# Question 12
+
+
+def max_consecutive_ones(array: List) -> int:
+    """ procedural like style """
+    if len(array) == 0: raise ValueError
+    if len(array) == 1: return 0
+    left_length = [0 for _ in range(len(array))]
+    right_length = [0 for _ in range(len(array))]
+    
+    consecutive_ones = 0
+    for idx in range(len(array)):
+        if array[idx] == 1:
+            consecutive_ones += 1
+        else:
+            consecutive_ones = 0
+        left_length[idx] = consecutive_ones
+    
+    consecutive_ones = 0
+    for idx in range(len(array) -1, -1, -1):
+        if array[idx] == 1: 
+            consecutive_ones += 1
+        else:
+            consecutive_ones = 0
+        right_length[idx] = consecutive_ones
+
+    max_idx, max_length = 0, right_length[1]
+    if left_length[-2] > max_length:
+        max_idx, max_length = len(array) - 1, left_length[-2]
+    
+    for idx in range(1, len(array) - 1):
+        curr_length = left_length[idx - 1] + right_length[idx + 1]
+        if curr_length > max_length:
+            max_idx, max_length = idx, curr_length
+    
+    return max_idx
+
+
+@pytest.mark.parametrize(
+	"array,expected_index",
+	[([0], 0), ([1], 0), (np.zeros(1, dtype=int), 0), (np.ones(1, dtype=int), 0),
+     ([0, 0], 0), ([1, 1], 0), ([0, 1], 0), ([1, 0], 1),
+     ([0, 1, 0, 0, 1, 1], 3), ([1, 1, 0, 0, 1, 0], 2),
+     ([1, 1, 0, 1, 0, 0, 1, 1], 2),
+    ]
+)
+def test_max_consecutive_ones(array: np.array, expected_index: int):
+    actual_index = max_consecutive_ones(array)
+    assert actual_index == expected_index
+
+
+# Question 13
+
+
+def shuffle_inplace(array: list[int]) -> list[int]:
+    for idx in range(len(array) - 1):
+        replace_idx = random.randint(idx, len(array) - 1)
+        array[idx], array[replace_idx] = array[replace_idx], array[idx]
+    return array
+
+
+def test_shuffle_inplace(random_ints):
+    print(random_ints)
+    shuffled_ints = shuffle_inplace(random_ints)
+    print(shuffled_ints)
