@@ -27,8 +27,8 @@ def precent_of(db: List[Tuple]) -> int:
 	
 	
 db = read_db()
-rate = rate_of(db, 365)
+rate = rate_of(db, 60)
 precent = precent_of(db)
 print('\n'.join(str(item) for item in sorted_precent(db)))
-print(rate)
-print(precent)
+print(f'daily rate to finish all questions in 2 months: {rate:.2f}')
+print(f'{precent:.2f}% of questions completed so far.')
