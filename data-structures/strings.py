@@ -2,7 +2,7 @@ import math
 import random
 import typing
 import pytest
-
+from collections import defaultdict
 from typing import List
 
 
@@ -332,4 +332,111 @@ def test_num2excelColumn() -> None:
 	num2excelColumn_assert(1015, "AMA")
 
 
-test_num2excelColumn()
+# Question 7
+
+
+def are_anagrams0(text1: str, text2: str) -> bool:
+  if not all(isinstance(text, str) for text in [text1, text2]):
+    raise ValueError(f"Both text1 and text2 must be strings")
+
+  chars_count1, chars_count2 = defaultdict(int), defaultdict(int)
+
+  for c1 in text1:
+    if c1.isalpha():
+      chars_count1[c1.lower()] += 1
+
+  for c2 in text2:
+    if c2.isalpha():
+      chars_count2[c2.lower()] += 1
+
+  return chars_count1 == chars_count2
+
+
+def _count_alphas(text: str) -> defaultdict:
+  chars_count = defaultdict(int)
+
+  for c in text:
+   if c.isalpha():
+     chars_count[c.lower()] += 1
+
+  return chars_count
+
+
+def are_anagrams1(text1: str, text2: str) -> bool:
+  if not all(isinstance(text, str) for text in [text1, text2]):
+    raise ValueError(f"Both text1 and text2 must be strings")
+
+  chars_count1 = _count_alphas(text1)
+  chars_count2 = _count_alphas(text2)
+
+  return chars_count1 == chars_count2
+
+
+def are_anagrams2(text1: str, text2: str) -> bool:
+  if not all(isinstance(text, str) for text in [text1, text2]):
+    raise ValueError(f"Both text1 and text2 must be strings")
+
+  chars_count = defaultdict(int)
+
+  for c1 in text1:
+    if c1.isalpha():
+      chars_count[c1.lower()] += 1
+
+  for c2 in text2:
+    if c2.isalpha():
+      chars_count[c2.lower()] -= 1
+      if chars_count[c2.lower()] < 0:
+        return False
+
+  return len(chars_count) == 0
+
+
+def are_anagrams3(text1: str, text2: str) -> bool:
+  if not all(isinstance(text, str) for text in [text1, text2]):
+    raise ValueError(f"Both text1 and text2 must be strings")
+
+  alphas1 = set(filter(str.isalpha, text1))
+  alphas2 = set(filter(str.isalpha, text1))
+
+  return alphas1 == alphas2
+
+
+def inputs(*func_inputs):
+  def func_decorator(func):
+    def inner():
+      for func_args in func_inputs:
+        try:
+          func(*func_args)
+        except Exception as e:
+          print(e)
+    return inner
+  return func_decorator
+
+
+@inputs(
+  ('', 'a', False),
+  ('a', 'b', False),
+  ('a', 'a', True),
+  ('ab', 'ab', True),
+  ('ab', 'ba', True),
+  ('aab', 'aba', True),
+  ('abb', 'aab', False),
+  ('I\'m Lord Voldemort', 'Tom Riddle mlorvo', True),
+  ('24234', '', True),
+)
+def test_valid_inputs(
+    text1: str, text2: str, expected_are_anagrms: bool,
+):
+  assert are_anagrams3(text1, text2) == expected_are_anagrms
+
+@inputs(
+  (1, 'text'),
+  (123, '4343'),
+  (str, zip),
+)
+def test_invalid_inputs(text1, text2):
+  # this is a method in part of TestCase class
+  # we could make a custom ValueError just to be more accurate
+  with self.assertRaises(ValueError):
+    are_anagrams(text1, text2)
+
