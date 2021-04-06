@@ -400,7 +400,7 @@ def test_max_consecutive_ones(array: np.array, expected_index: int):
 # Question 13
 
 
-def shuffle_inplace(array: list[int]) -> list[int]:
+def shuffle_inplace(array: List[int]) -> List[int]:
     for idx in range(len(array) - 1):
         replace_idx = random.randint(idx, len(array) - 1)
         array[idx], array[replace_idx] = array[replace_idx], array[idx]

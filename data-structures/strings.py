@@ -1,6 +1,4 @@
-import math
 import random
-import typing
 import pytest
 from collections import defaultdict
 from typing import List
