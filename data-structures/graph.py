@@ -353,3 +353,53 @@ def test_bfs(
 
     actual_bfs = tuple(bfs(graph, start_key))
     assert actual_bfs == expected_bfs
+
+
+def dfs(graph: NestedNodeGraph, start_key: Hashable) -> Iterable[Comparable]:
+    start_node = next(itertools.dropwhile(
+        lambda node: node.key != start_key, graph.nodes))
+    stack = [start_node]
+    visited = {start_node}
+
+    while len(stack) > 0:
+        current_node = stack.pop()  # difference between BFS and DFS
+        yield current_node.key
+        for neighbour_node in current_node.neighbours:
+            if neighbour_node not in visited:
+                stack.append(neighbour_node)
+                visited.add(neighbour_node)
+
+
+@pytest.mark.parametrize(
+    'edges,start_key,expected_bfs',
+    [
+        ([(1, 2), (1, 3), (1, 4),
+         (2, 5), (2, 3),
+         (3, 6),
+         (4, 5), (4, 7),
+         (6, 2)],
+         1,
+         (1, 4, 7, 5, 3, 6, 2)),
+
+        ([(1, 2), (1, 3), (1, 4),
+         (2, 5), (2, 3),
+         (3, 6),
+         (4, 5), (4, 7),
+         (6, 2)],
+         7,
+         (7, 4, 5, 2, 6, 3, 1)),
+    ]
+)
+def test_dfs(
+        edges: List[Tuple[int, int]], start_key: int, expected_bfs: Tuple[int],
+):
+    graph = NestedNodeGraph()
+    for key in range(1, 8):
+        graph.add_node(key)
+    for edge in edges:
+        graph.add_edge(*edge)
+
+    actual_bfs = tuple(dfs(graph, start_key))
+    assert actual_bfs == expected_bfs
+
+
